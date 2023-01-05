@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ListPreference
+        app:iconSpaceReserved="false"
+        app:key="@string/theme_key"
+        app:title="@string/theme"
+        app:useSimpleSummaryProvider="true" />
+
+    <Preference
+        android:key="@string/download_location_key"
+        android:title="@string/download_location_title"
+        app:iconSpaceReserved="false"></Preference>
+
+    <Preference
+        android:key="@string/youtubedl_update_key"
+        android:title="@string/youtubedl_update"
+        app:iconSpaceReserved="false"
+        app:persistent="false"></Preference>
+
+    <Preference
+        android:title="@string/about"
+        app:iconSpaceReserved="false"
+        app:persistent="false"
+        app:summary="https://github.com/yausername/dvd">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="https://github.com/yausername/dvd" />
+    </Preference>
+</PreferenceScreen>
