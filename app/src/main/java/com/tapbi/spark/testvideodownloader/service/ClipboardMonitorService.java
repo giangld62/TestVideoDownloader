@@ -24,6 +24,7 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -54,6 +55,11 @@ public class ClipboardMonitorService extends Service {
                 (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         mClipboardManager.addPrimaryClipChangedListener(
                 mOnPrimaryClipChangedListener);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_REDELIVER_INTENT;
     }
 
     @Override
@@ -108,8 +114,8 @@ public class ClipboardMonitorService extends Service {
 
             if (isExternalStorageWritable()) {
                 try {
-                    Log.i(TAG, "Writing new clip to history:");
-                    Log.i(TAG, mTextToWrite.toString());
+                    Log.e(TAG, "Writing new clip to history:");
+                    Log.e(TAG, mTextToWrite.toString());
                     BufferedWriter writer =
                             new BufferedWriter(new FileWriter(mHistoryFile, true));
                     writer.write(String.format("[%s]: ", mNow.toString()));
@@ -117,11 +123,11 @@ public class ClipboardMonitorService extends Service {
                     writer.newLine();
                     writer.close();
                 } catch (IOException e) {
-                    Log.w(TAG, String.format("Failed to open file %s for writing!",
+                    Log.e(TAG, String.format("Failed to open file %s for writing!",
                             mHistoryFile.getAbsoluteFile()));
                 }
             } else {
-                Log.w(TAG, "External storage is not writable!");
+                Log.e(TAG, "External storage is not writable!");
             }
         }
     }

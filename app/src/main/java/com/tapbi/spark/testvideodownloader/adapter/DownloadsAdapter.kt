@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Environment
 import android.text.format.Formatter
 import android.view.LayoutInflater
 import android.view.View
@@ -14,19 +15,22 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.*
+import com.tapbi.spark.testvideodownloader.R
 import com.tapbi.spark.testvideodownloader.database.Download
+import com.tapbi.spark.testvideodownloader.utils.AudioExtractor
 import com.tapbi.spark.testvideodownloader.work.DeleteWorker
 import kotlinx.android.synthetic.main.fragment_downloads.view.*
-import com.tapbi.spark.testvideodownloader.R
-import java.nio.file.Files.delete
+import timber.log.Timber
+import java.io.File
 
 class DownloadsAdapter : RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
 
-    private var mValues: List<Download> = emptyList()
+    private var mValues = arrayListOf<Download>()
 
     @SuppressLint("NotifyDataSetChanged")
     fun addItems(items: List<Download>) {
-        mValues = items
+        mValues.clear()
+        mValues.addAll(items)
         notifyDataSetChanged()
     }
 
@@ -64,6 +68,9 @@ class DownloadsAdapter : RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
                         }
                         R.id.delete -> {
                             startDelete(item.id, context)
+                        }
+                        R.id.extractAudio -> {
+                            testExtractAudio(item)
                         }
                     }
                     true
@@ -133,6 +140,26 @@ class DownloadsAdapter : RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
             ExistingWorkPolicy.KEEP,
             workRequest
         )
+    }
+
+    private fun testExtractAudio(item: Download) {
+        val downloadDirPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path + "/Browser"
+        Timber.e("giangld ${downloadDirPath}")
+        val audioSavePath = File(downloadDirPath, "${item.name}.mp3").path
+        AudioExtractor().genVideoUsingMuxer("$downloadDirPath/${item.name}.mkv", audioSavePath, -1, -1, true, false)
+        val newItem = Download(
+            name = "${item.name}.mp3",
+            timestamp = System.currentTimeMillis(),
+            totalSize = 0
+        )
+        newItem.downloadedPath = "content://com.android.externalstorage.documents/tree/primary%3ADownload%2FBrowser/document/primary%3ADownload%2FBrowser%2F"+ "${item.name}.mp3"
+        newItem.downloadedPercent = 100.00
+        newItem.downloadedSize = File(audioSavePath).length()/1024
+        newItem.mediaType = "audio"
+        mValues.add(
+            newItem
+        )
+        notifyItemInserted(mValues.size-1)
     }
 
 }

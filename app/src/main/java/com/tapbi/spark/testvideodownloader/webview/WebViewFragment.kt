@@ -22,8 +22,6 @@ import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
-import com.arthenica.mobileffmpeg.ExecuteCallback
-import com.arthenica.mobileffmpeg.FFmpegExecution
 import com.bumptech.glide.Glide
 import com.tapbi.spark.testvideodownloader.R
 import com.tapbi.spark.testvideodownloader.adapter.VideoAdapter
@@ -102,8 +100,8 @@ class WebViewFragment : Fragment() {
 
     private fun eventClick() {
         iv_back.setOnClickListener {
-            testExtractAudio()
-            testExtractAudioUseFFmpeg()
+//            testExtractAudio()
+//            testExtractAudioUseFFmpeg()
 //            testExtractAudioJAVE()
             if (web_view.canGoBack()) {
                 web_view.goBack()
@@ -143,28 +141,28 @@ class WebViewFragment : Fragment() {
         AudioExtractor().genVideoUsingMuxer(videoFile, originalAudio, -1, -1, true, false)
     }
 
-    private fun testExtractAudioUseFFmpeg() {
-        Timber.e("giangld testExtractAudioUseFFmpeg")
-        val videoFile = File(requireContext().filesDir, "test_2.webm").path
-        val originalAudio = File(requireContext().filesDir, "extract123.m4a").path
-        val c1 = arrayOf(
-            "-i",
-            videoFile,
-            "-vn",
-            "-acodec",
-            "copy",
-            originalAudio
-        )
-        val c = "ffmpeg -i $videoFile -vn -acodec copy $originalAudio"
-        val commandArray = c.split(" ").toTypedArray()
-        com.arthenica.mobileffmpeg.FFmpeg.executeAsync(c1, object : ExecuteCallback {
-            override fun apply(executionId: Long, returnCode: Int) {
-                Timber.e("giangld return $returnCode")
-                Timber.e("giangld executionId $executionId")
-                Timber.e("giangld FFMPEG   ${FFmpegExecution(executionId, arrayOf(c))}")
-            }
-        })
-    }
+//    private fun testExtractAudioUseFFmpeg() {
+//        Timber.e("giangld testExtractAudioUseFFmpeg")
+//        val videoFile = File(requireContext().filesDir, "test_2.webm").path
+//        val originalAudio = File(requireContext().filesDir, "extract123.m4a").path
+//        val c1 = arrayOf(
+//            "-i",
+//            videoFile,
+//            "-vn",
+//            "-acodec",
+//            "copy",
+//            originalAudio
+//        )
+//        val c = "ffmpeg -i $videoFile -vn -acodec copy $originalAudio"
+//        val commandArray = c.split(" ").toTypedArray()
+//        com.arthenica.mobileffmpeg.FFmpeg.executeAsync(c1, object : ExecuteCallback {
+//            override fun apply(executionId: Long, returnCode: Int) {
+//                Timber.e("giangld return $returnCode")
+//                Timber.e("giangld executionId $executionId")
+//                Timber.e("giangld FFMPEG   ${FFmpegExecution(executionId, arrayOf(c))}")
+//            }
+//        })
+//    }
 
     private fun testExtractAudioJAVE() {
         val source = File(requireContext().filesDir, "test.mp4")

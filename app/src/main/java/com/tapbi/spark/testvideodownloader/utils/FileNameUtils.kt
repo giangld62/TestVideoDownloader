@@ -1,4 +1,4 @@
-package org.yausername.dvd.utils
+package com.tapbi.spark.testvideodownloader.utils
 
 object FileNameUtils {
     fun createFilename(title: String): String {

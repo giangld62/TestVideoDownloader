@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.DocumentsContract
 import android.webkit.MimeTypeMap
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
@@ -19,12 +20,14 @@ import com.tapbi.spark.testvideodownloader.database.Download
 import com.tapbi.spark.testvideodownloader.database.DownloadsRepository
 import com.yausername.youtubedl_android.YoutubeDL
 import com.yausername.youtubedl_android.YoutubeDLRequest
-import org.yausername.dvd.utils.FileNameUtils
+import com.tapbi.spark.testvideodownloader.utils.FileNameUtils
 import org.apache.commons.io.IOUtils
+import timber.log.Timber
 import java.io.File
 import java.util.*
 
 private const val TAG = "DownloadWorker"
+
 class DownloadWorker(appContext: Context, params: WorkerParameters) :
     CoroutineWorker(appContext, params) {
 
@@ -45,6 +48,8 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
         val taskId = inputData.getString(taskIdKey)!!
 
         createNotificationChannel()
+        val notificationLayout =
+            RemoteViews("com.tapbi.spark.testvideodownloader", R.layout.heads_up_noti_start)
         val notificationId = id.hashCode()
         val notification = NotificationCompat.Builder(
             applicationContext,
@@ -53,6 +58,8 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(name)
             .setContentText(applicationContext.getString(R.string.download_start))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCustomHeadsUpContentView(notificationLayout)
             .build()
 
         val foregroundInfo = ForegroundInfo(notificationId, notification)
@@ -76,6 +83,7 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
             YoutubeDL.getInstance()
                 .execute(request, taskId) { progress, _, line ->
                     showProgress(id.hashCode(), taskId, name, progress.toInt(), line, tmpFile)
+                    Timber.e("giangld progress ${progress}")
                 }
             val treeUri = Uri.parse(downloadDir)
             val docId = DocumentsContract.getTreeDocumentId(treeUri)
@@ -112,6 +120,20 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
         download.mediaType = if (vcodec == "none" && acodec != "none") "audio" else "video"
 
         repository.insert(download)
+        val notificationLayout2 =
+            RemoteViews("com.tapbi.spark.testvideodownloader", R.layout.heads_up_noti)
+        val notification2 = NotificationCompat.Builder(
+            applicationContext,
+            channelId
+        )
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle(name)
+            .setContentText("Download Completed")
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCustomHeadsUpContentView(notificationLayout2)
+            .build()
+        notificationManager?.notify(1,notification2)
+        Timber.e("giangld Result.success ")
 //
         return Result.success()
     }
@@ -129,12 +151,13 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
             .putExtra("taskId", taskId)
             .putExtra("notificationId", id)
 
-        val pendingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
             PendingIntent.getBroadcast(applicationContext, 0, intent, PendingIntent.FLAG_MUTABLE)
         else PendingIntent.getBroadcast(applicationContext, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        createNotificationChannel2()
         val notification = NotificationCompat.Builder(
             applicationContext,
-            channelId
+            progressChannelId
         )
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setSmallIcon(R.mipmap.ic_launcher)
@@ -161,7 +184,7 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
                 val channelName = applicationContext.getString(R.string.download_noti_channel_name)
                 notificationChannel = NotificationChannel(
                     channelId,
-                    channelName, NotificationManager.IMPORTANCE_LOW
+                    channelName, NotificationManager.IMPORTANCE_HIGH
                 )
                 notificationChannel.description =
                     channelName
@@ -170,8 +193,25 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
         }
     }
 
+    private fun createNotificationChannel2() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            var notificationChannel =
+                notificationManager?.getNotificationChannel(progressChannelId)
+            if (notificationChannel == null) {
+                val channelName = "progressChannelId"
+                notificationChannel = NotificationChannel(
+                    progressChannelId,
+                    channelName, NotificationManager.IMPORTANCE_LOW
+                )
+                notificationChannel.description = channelName
+                notificationManager?.createNotificationChannel(notificationChannel)
+            }
+        }
+    }
+
     companion object {
         private const val channelId = "dvd_download"
+        private const val progressChannelId = "progressChannelId"
         const val urlKey = "url"
         const val nameKey = "name"
         const val formatIdKey = "formatId"

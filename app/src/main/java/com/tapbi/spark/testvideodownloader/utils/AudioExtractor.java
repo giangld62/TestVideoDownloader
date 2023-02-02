@@ -45,7 +45,7 @@ public class AudioExtractor {
         int trackCount = extractor.getTrackCount();
         // Set up MediaMuxer for the destination.
         MediaMuxer muxer;
-        muxer = new MediaMuxer(dstPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+        muxer = new MediaMuxer(dstPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_WEBM);
         // Set up the tracks and retrieve the max buffer size for selected
         // tracks.
         HashMap<Integer, Integer> indexMap = new HashMap<Integer, Integer>(trackCount);

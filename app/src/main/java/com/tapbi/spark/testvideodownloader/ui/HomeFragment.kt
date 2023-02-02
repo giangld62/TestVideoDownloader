@@ -6,6 +6,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.os.Environment.DIRECTORY_DOWNLOADS
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
@@ -15,6 +17,7 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -40,6 +43,7 @@ import com.tapbi.spark.testvideodownloader.vm.LoadState
 import com.tapbi.spark.testvideodownloader.vm.VidInfoViewModel
 import com.tapbi.spark.testvideodownloader.webview.WebViewFragment.Companion.videoIds
 import com.tapbi.spark.testvideodownloader.model.VidInfoItem
+import com.tapbi.spark.testvideodownloader.ui.HomeFragment.Companion.downloadLocationDialogTag
 import com.tapbi.spark.testvideodownloader.webview.WebViewFragment.Companion.currentVideoId
 import com.tapbi.spark.testvideodownloader.webview.WebViewFragment.Companion.urlDown
 import com.tapbi.spark.testvideodownloader.webview.WebViewFragment.Companion.urlWeb
@@ -55,6 +59,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+        downloadDirPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -305,6 +310,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener,
     companion object {
         const val downloadLocationDialogTag = "download_location_chooser_dialog"
         private const val OPEN_DIRECTORY_REQUEST_CODE = 42069
+        var downloadDirPath: String? = ""
     }
 
 }
