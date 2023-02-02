@@ -39,7 +39,11 @@ import kotlinx.android.synthetic.main.fragment_home.view.*
 import com.tapbi.spark.testvideodownloader.vm.LoadState
 import com.tapbi.spark.testvideodownloader.vm.VidInfoViewModel
 import com.tapbi.spark.testvideodownloader.webview.WebViewFragment.Companion.videoIds
-import org.yausername.dvd.model.VidInfoItem
+import com.tapbi.spark.testvideodownloader.model.VidInfoItem
+import com.tapbi.spark.testvideodownloader.webview.WebViewFragment.Companion.currentVideoId
+import com.tapbi.spark.testvideodownloader.webview.WebViewFragment.Companion.urlDown
+import com.tapbi.spark.testvideodownloader.webview.WebViewFragment.Companion.urlWeb
+import timber.log.Timber
 
 
 class HomeFragment : Fragment(), SearchView.OnQueryTextListener,
@@ -61,20 +65,39 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener,
         eventClick()
     }
 
+    override fun onDestroyView() {
+        Timber.e("giangld onDestroyView")
+        super.onDestroyView()
+    }
+
     private fun eventClick() {
-        tv_next_video.setOnClickListener {
-            if(currentVideoPos < videoIds.size){
-                currentVideoPos ++
-            }
-            else{
-                currentVideoPos = 0;
-            }
-            processSearch("https://facebook.com/username/videos/${videoIds[currentVideoPos]}")
-        }
+//        tv_next_video.setOnClickListener {
+//            if(currentVideoPos < videoIds.size-1){
+//                currentVideoPos ++
+//            }
+//            else{
+//                currentVideoPos = 0;
+//            }
+//            processSearch("https://facebook.com/username/videos/${videoIds[currentVideoPos]}")
+//        }
     }
 
     private fun initViews(view: View) {
-        processSearch("https://facebook.com/username/videos/${videoIds[currentVideoPos]}")
+        if(urlWeb.value?.startsWith("https://m.facebook.com") == true){
+            processSearch("https://facebook.com/$currentVideoId")
+        }
+        else if(urlWeb.value?.startsWith("https://www.tiktok.com") == true){
+            processSearch(urlDown)
+        }
+        else if(urlWeb.value?.startsWith("https://m.youtube.com/watch?v=") == true){
+            processSearch(urlDown)
+        }
+        else if(urlWeb.value?.startsWith("https://m.youtube.com") == true){
+            processSearch("https://m.youtube.com$currentVideoId")
+        }
+        else if(urlWeb.value?.startsWith("https://mobile.twitter.com/") == true){
+            processSearch("https://twitter.com$currentVideoId")
+        }
         val vidFormatsVm =
             ViewModelProvider(activity as MainActivity)[VidInfoViewModel::class.java]
         with(view.recyclerview) {
@@ -92,7 +115,10 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener,
                 })
         }
         vidFormatsVm.vidFormats.observe(viewLifecycleOwner, Observer { t ->
-            (recyclerview.adapter as VidInfoAdapter).fill(t)
+            t?.let {
+                (recyclerview.adapter as VidInfoAdapter).fill(t)
+                vidFormatsVm.vidFormats.postValue(null)
+            }
         })
         vidFormatsVm.loadState.observe(viewLifecycleOwner, Observer { t ->
             when (t) {
@@ -114,6 +140,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener,
                 val picasso = Picasso.get()
                 picasso.load(this)
                     .into(toolbar_image)
+                vidFormatsVm.thumbnail.postValue(null)
             } ?: toolbar_image.setImageResource(R.drawable.toolbar)
         })
     }

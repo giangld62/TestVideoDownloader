@@ -37,6 +37,11 @@
                 android:value="" />
         </activity>
 
+        <service
+            android:name=".service.ClipboardMonitorService"
+            android:label="Clipboard Monitor"
+            android:exported="false"/>
+
         <receiver android:name=".work.CancelReceiver"/>
     </application>
 

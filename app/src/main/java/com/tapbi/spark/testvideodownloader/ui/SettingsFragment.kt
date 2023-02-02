@@ -22,6 +22,7 @@ import com.tapbi.spark.testvideodownloader.R
 import com.tapbi.spark.testvideodownloader.work.YoutubeDLUpdateWorker
 import com.tapbi.spark.testvideodownloader.work.YoutubeDLUpdateWorker.Companion.workTag
 import com.yausername.youtubedl_android.YoutubeDL
+import timber.log.Timber
 
 
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -155,6 +156,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                                     Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                         )
                         updateDefaultDownloadLocation(it.toString())
+                        Timber.e("giangld DownloadLocation ${it}")
                     }
                 }
             }

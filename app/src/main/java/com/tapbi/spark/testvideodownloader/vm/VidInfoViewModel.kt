@@ -1,16 +1,15 @@
 package com.tapbi.spark.testvideodownloader.vm
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tapbi.spark.testvideodownloader.webview.WebViewFragment.Companion.videoIds
-import org.yausername.dvd.model.VidInfoItem
+import com.tapbi.spark.testvideodownloader.model.VidInfoItem
 import com.yausername.youtubedl_android.YoutubeDL
 import com.yausername.youtubedl_android.mapper.VideoInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class VidInfoViewModel : ViewModel() {
 
@@ -40,11 +39,11 @@ class VidInfoViewModel : ViewModel() {
             try {
                 withContext(Dispatchers.IO) {
                     vidInfo = YoutubeDL.getInstance().getInfo(url)
-                    Log.e("TAG", "fetchInfo success $url")
+                    Timber.e("giangld fetchInfo success $url")
                 }
             } catch (e: Exception) {
-                Log.e("TAG", "fetchInfo error: $url")
-                Log.e("TAG", "fetchInfo error: ${e.message}")
+                Timber.e("giangld fetchInfo error: $url")
+                Timber.e("giangld fetchInfo error: ${e.message}")
                 updateLoading(LoadState.LOADED)
                 return@launch
             }

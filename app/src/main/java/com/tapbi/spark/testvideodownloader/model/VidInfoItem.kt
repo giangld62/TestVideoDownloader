@@ -1,4 +1,4 @@
-package org.yausername.dvd.model
+package com.tapbi.spark.testvideodownloader.model
 
 import com.yausername.youtubedl_android.mapper.VideoFormat
 import com.yausername.youtubedl_android.mapper.VideoInfo

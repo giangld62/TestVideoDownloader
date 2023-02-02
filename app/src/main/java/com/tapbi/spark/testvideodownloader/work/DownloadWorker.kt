@@ -80,7 +80,7 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
             val treeUri = Uri.parse(downloadDir)
             val docId = DocumentsContract.getTreeDocumentId(treeUri)
             val destDir = DocumentsContract.buildDocumentUriUsingTree(treeUri, docId)
-            tmpFile.listFiles().forEach {
+            tmpFile.listFiles()?.forEach {
                 val mimeType =
                     MimeTypeMap.getSingleton().getMimeTypeFromExtension(it.extension) ?: "*/*"
                 destUri = DocumentsContract.createDocument(
@@ -129,7 +129,9 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
             .putExtra("taskId", taskId)
             .putExtra("notificationId", id)
 
-        val pendingIntent = PendingIntent.getBroadcast(applicationContext, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        val pendingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            PendingIntent.getBroadcast(applicationContext, 0, intent, PendingIntent.FLAG_MUTABLE)
+        else PendingIntent.getBroadcast(applicationContext, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         val notification = NotificationCompat.Builder(
             applicationContext,
             channelId

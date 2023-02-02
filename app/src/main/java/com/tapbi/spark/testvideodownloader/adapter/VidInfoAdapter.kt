@@ -20,7 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.yausername.dvd.model.VidInfoItem
+import com.tapbi.spark.testvideodownloader.model.VidInfoItem
 import java.util.concurrent.TimeUnit
 
 private const val ITEM_VIEW_TYPE_HEADER = 0

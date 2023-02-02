@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
+import com.tapbi.spark.testvideodownloader.utils.MyDebugTree
 import com.tapbi.spark.testvideodownloader.work.CancelReceiver
 import com.yausername.ffmpeg.FFmpeg
 import com.yausername.youtubedl_android.YoutubeDL
@@ -14,11 +15,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        initLog()
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
         AppCompatDelegate.setDefaultNightMode(
             preferences.getString(
@@ -43,5 +46,11 @@ class App : Application() {
     companion object {
         @SuppressLint("StaticFieldLeak")
         lateinit var context: Context
+    }
+
+    private fun initLog() {
+        if (BuildConfig.DEBUG) {
+            Timber.plant(MyDebugTree())
+        }
     }
 }

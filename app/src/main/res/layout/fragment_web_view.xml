@@ -11,19 +11,38 @@
         android:id="@+id/pb_load"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btn_download"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Download"
+    <ImageView
+        android:id="@+id/iv_download"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:background="@drawable/circle_bg_download"
+        android:padding="2dp"
+        android:src="@drawable/ic_baseline_arrow_circle_down_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.9" />
+
+    <ImageView
+        android:id="@+id/iv_download2"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:scaleType="fitXY"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.9" />
 
     <ImageView
         android:id="@+id/iv_back"
@@ -38,20 +57,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tv_title"
+    <EditText
+        android:id="@+id/edUrl"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="48dp"
         android:ellipsize="end"
-        android:gravity="center"
-        android:maxLines="1"
+        android:gravity="start|center_vertical"
         android:textColor="@color/black"
-        android:textSize="18sp"
+        android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@id/web_view"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <WebView
+    <ImageView
+        android:id="@+id/imLoad"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="10dp"
+        android:src="@drawable/ic_baseline_search_24"
+        app:layout_constraintBottom_toBottomOf="@id/edUrl"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/edUrl" />
+
+    <android.webkit.WebView
         android:id="@+id/web_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"

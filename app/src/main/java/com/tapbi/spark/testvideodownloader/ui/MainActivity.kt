@@ -18,6 +18,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.tapbi.spark.testvideodownloader.R
+import com.tapbi.spark.testvideodownloader.service.ClipboardMonitorService
 import com.tapbi.spark.testvideodownloader.vm.VidInfoViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import org.yausername.dvd.utils.URLUtils
@@ -48,6 +49,7 @@ class MainActivity : AppCompatActivity(), NavActivity {
         nav_view?.setupWithNavController(navController)
 
         handleIntent(intent)
+//        startService( Intent(this, ClipboardMonitorService::class.java))
     }
 
     override fun onNewIntent(intent: Intent?) {
