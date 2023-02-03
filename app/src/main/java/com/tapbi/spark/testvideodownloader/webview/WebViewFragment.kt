@@ -37,7 +37,6 @@ import com.tapbi.spark.testvideodownloader.utils.Constant.YOUTUBE_SCRIPTS_3
 import com.tapbi.spark.testvideodownloader.utils.Constant.YOUTUBE_SCRIPTS_4
 import com.tapbi.spark.testvideodownloader.utils.Constant.YOUTUBE_SHORTS_VIDEO_SCRIPTS
 import it.sauronsoftware.jave.*
-import kotlinx.android.synthetic.main.fragment_downloads_list.*
 import kotlinx.android.synthetic.main.fragment_web_view.*
 import org.jsoup.Jsoup
 import timber.log.Timber
@@ -459,7 +458,9 @@ class WebViewFragment : Fragment() {
                     url?.let {
                         urlWeb.value = url
                         val editable = Editable.Factory.getInstance().newEditable(url)
-                        edUrl.text = editable
+                        editable?.let {
+                            edUrl.text = it
+                        }
                         currentVideoId = ""
 
                         if (urlWeb.value?.startsWith("https://m.youtube.com/watch?v=") == true) {

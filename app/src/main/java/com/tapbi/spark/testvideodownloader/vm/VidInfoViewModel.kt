@@ -40,6 +40,9 @@ class VidInfoViewModel : ViewModel() {
                 withContext(Dispatchers.IO) {
                     vidInfo = YoutubeDL.getInstance().getInfo(url)
                     Timber.e("giangld fetchInfo success $url")
+                    for(item in vidInfo.formats){
+                        Timber.e("giangld fetchInfo success ${item.ext}")
+                    }
                 }
             } catch (e: Exception) {
                 Timber.e("giangld fetchInfo error: $url")

@@ -18,6 +18,7 @@ import com.tapbi.spark.testvideodownloader.R
 import com.tapbi.spark.testvideodownloader.database.AppDatabase
 import com.tapbi.spark.testvideodownloader.database.Download
 import com.tapbi.spark.testvideodownloader.database.DownloadsRepository
+import com.tapbi.spark.testvideodownloader.ui.HomeFragment
 import com.yausername.youtubedl_android.YoutubeDL
 import com.yausername.youtubedl_android.YoutubeDLRequest
 import com.tapbi.spark.testvideodownloader.utils.FileNameUtils
@@ -50,12 +51,14 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
         createNotificationChannel()
         val notificationLayout =
             RemoteViews("com.tapbi.spark.testvideodownloader", R.layout.heads_up_noti_start)
+
         val notificationId = id.hashCode()
         val notification = NotificationCompat.Builder(
             applicationContext,
             channelId
         )
             .setSmallIcon(R.mipmap.ic_launcher)
+//            .setWhen(System.currentTimeMillis())
             .setContentTitle(name)
             .setContentText(applicationContext.getString(R.string.download_start))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -113,7 +116,7 @@ class DownloadWorker(appContext: Context, params: WorkerParameters) :
         val repository =
             DownloadsRepository(downloadsDao)
         val download =
-            Download(name, Date().time, size)
+            Download(name, Date().time, size, HomeFragment.currentThumbImageLink)
         download.downloadedPath = destUri.toString()
         download.downloadedPercent = 100.00
         download.downloadedSize = size

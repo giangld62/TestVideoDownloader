@@ -4,6 +4,7 @@ import android.content.ClipboardManager
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Environment
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -24,6 +25,8 @@ import com.tapbi.spark.testvideodownloader.R
 import com.tapbi.spark.testvideodownloader.vm.VidInfoViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import org.yausername.dvd.utils.URLUtils
+import timber.log.Timber
+import java.io.File
 
 
 class MainActivity : AppCompatActivity(), NavActivity {
@@ -53,6 +56,7 @@ class MainActivity : AppCompatActivity(), NavActivity {
         clipBoard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
         handleIntent(intent)
 //        startService(Intent(this, ClipboardMonitorService::class.java))
+
     }
 
     override fun onNewIntent(intent: Intent?) {

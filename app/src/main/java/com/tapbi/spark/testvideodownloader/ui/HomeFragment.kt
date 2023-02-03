@@ -43,6 +43,8 @@ import com.tapbi.spark.testvideodownloader.vm.LoadState
 import com.tapbi.spark.testvideodownloader.vm.VidInfoViewModel
 import com.tapbi.spark.testvideodownloader.webview.WebViewFragment.Companion.videoIds
 import com.tapbi.spark.testvideodownloader.model.VidInfoItem
+import com.tapbi.spark.testvideodownloader.ui.HomeFragment.Companion.OPEN_DIRECTORY_REQUEST_CODE
+import com.tapbi.spark.testvideodownloader.ui.HomeFragment.Companion.downloadDirPath
 import com.tapbi.spark.testvideodownloader.ui.HomeFragment.Companion.downloadLocationDialogTag
 import com.tapbi.spark.testvideodownloader.webview.WebViewFragment.Companion.currentVideoId
 import com.tapbi.spark.testvideodownloader.webview.WebViewFragment.Companion.urlDown
@@ -142,6 +144,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener,
         })
         vidFormatsVm.thumbnail.observe(viewLifecycleOwner, Observer {
             it?.apply {
+                currentThumbImageLink = this
                 val picasso = Picasso.get()
                 picasso.load(this)
                     .into(toolbar_image)
@@ -311,6 +314,7 @@ class HomeFragment : Fragment(), SearchView.OnQueryTextListener,
         const val downloadLocationDialogTag = "download_location_chooser_dialog"
         private const val OPEN_DIRECTORY_REQUEST_CODE = 42069
         var downloadDirPath: String? = ""
+        var currentThumbImageLink = ""
     }
 
 }

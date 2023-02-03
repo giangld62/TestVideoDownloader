@@ -15,17 +15,32 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.*
+import com.bumptech.glide.Glide
 import com.tapbi.spark.testvideodownloader.R
 import com.tapbi.spark.testvideodownloader.database.Download
 import com.tapbi.spark.testvideodownloader.utils.AudioExtractor
 import com.tapbi.spark.testvideodownloader.work.DeleteWorker
 import kotlinx.android.synthetic.main.fragment_downloads.view.*
+import kotlinx.android.synthetic.main.fragment_downloads_list.*
+import kotlinx.android.synthetic.main.fragment_downloads_list.view.*
+import kotlinx.android.synthetic.main.item_downloaded_video.view.*
 import timber.log.Timber
 import java.io.File
 
-class DownloadsAdapter : RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
+class DownloadsAdapter(private val inter: IDownloadsAdapter) : RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
 
     private var mValues = arrayListOf<Download>()
+    private var isSelectVideo = false
+
+    fun setSelectVideos(isSelect: Boolean){
+        this.isSelectVideo = isSelect
+        if(!isSelectVideo){
+            for(item in mValues){
+                item.isSelected = false
+            }
+        }
+        notifyDataSetChanged()
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     fun addItems(items: List<Download>) {
@@ -36,7 +51,7 @@ class DownloadsAdapter : RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.fragment_downloads, parent, false)
+            .inflate(R.layout.item_downloaded_video, parent, false)
         return ViewHolder(view)
     }
 
@@ -44,40 +59,24 @@ class DownloadsAdapter : RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
         val item = mValues[position]
 
         with(holder.itemView) {
-            title_tv.text = item.name
-            @SuppressLint("SetTextI18n")
-            download_percent_tv.text = "${item.downloadedPercent}%"
-            val totalSize = Formatter.formatShortFileSize(context, item.totalSize)
-            val downloadedSize = Formatter.formatShortFileSize(context, item.downloadedSize)
-            @SuppressLint("SetTextI18n")
-            download_size_tv.text = "${downloadedSize}/${totalSize}"
-            if (item.mediaType == "audio") {
-                format_ic.setImageResource(R.drawable.ic_baseline_audiotrack_24)
-            } else {
-                format_ic.setImageResource(R.drawable.ic_baseline_video_library_24)
-            }
-            item_more.setOnClickListener {
-                val popupMenu = PopupMenu(context, holder.itemView)
-                val inflater = popupMenu.menuInflater
-                inflater.inflate(R.menu.sub_menu, popupMenu.menu)
-                popupMenu.show()
-                popupMenu.setOnMenuItemClickListener {
-                    when (it.itemId) {
-                        R.id.share -> {
-                            shareContent(item.downloadedPath, context)
-                        }
-                        R.id.delete -> {
-                            startDelete(item.id, context)
-                        }
-                        R.id.extractAudio -> {
-                            testExtractAudio(item)
-                        }
-                    }
-                    true
-                }
-            }
+            Glide.with(ivVideoThumbImage).load(item.thumbImageLink).error(R.drawable.splash).into(ivVideoThumbImage)
+            ivCheckIcon.visibility = if(item.isSelected) View.VISIBLE else View.GONE
             setOnClickListener {
-                viewContent(item.downloadedPath, it.context)
+                if (!isSelectVideo) {
+                    viewContent(item.downloadedPath, it.context)
+                }
+                else{
+                    if (!item.isSelected) {
+                        inter.selectVideo(item)
+                        item.isSelected = true
+                        ivCheckIcon.visibility = View.VISIBLE
+                    }
+                    else{
+                        item.isSelected = false
+                        inter.unSelectVideo(item)
+                        ivCheckIcon.visibility = View.GONE
+                    }
+                }
             }
         }
     }
@@ -142,6 +141,11 @@ class DownloadsAdapter : RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
         )
     }
 
+    interface IDownloadsAdapter{
+        fun selectVideo(download: Download)
+        fun unSelectVideo(download: Download)
+    }
+
     private fun testExtractAudio(item: Download) {
         val downloadDirPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path + "/Browser"
         Timber.e("giangld ${downloadDirPath}")
@@ -160,6 +164,47 @@ class DownloadsAdapter : RecyclerView.Adapter<DownloadsAdapter.ViewHolder>() {
             newItem
         )
         notifyItemInserted(mValues.size-1)
+    }
+
+    private fun View.showVideoInfo(
+        item: Download,
+        holder: ViewHolder
+    ) {
+        title_tv.text = item.name
+        @SuppressLint("SetTextI18n")
+        download_percent_tv.text = "${item.downloadedPercent}%"
+        val totalSize = Formatter.formatShortFileSize(context, item.totalSize)
+        val downloadedSize = Formatter.formatShortFileSize(context, item.downloadedSize)
+        @SuppressLint("SetTextI18n")
+        download_size_tv.text = "${downloadedSize}/${totalSize}"
+        if (item.mediaType == "audio") {
+            format_ic.setImageResource(R.drawable.ic_baseline_audiotrack_24)
+        } else {
+            format_ic.setImageResource(R.drawable.ic_baseline_video_library_24)
+        }
+        item_more.setOnClickListener {
+            val popupMenu = PopupMenu(context, holder.itemView)
+            val inflater = popupMenu.menuInflater
+            inflater.inflate(R.menu.sub_menu, popupMenu.menu)
+            popupMenu.show()
+            popupMenu.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.share -> {
+                        shareContent(item.downloadedPath, context)
+                    }
+                    R.id.delete -> {
+                        startDelete(item.id, context)
+                    }
+                    R.id.extractAudio -> {
+                        testExtractAudio(item)
+                    }
+                }
+                true
+            }
+        }
+        setOnClickListener {
+            viewContent(item.downloadedPath, it.context)
+        }
     }
 
 }

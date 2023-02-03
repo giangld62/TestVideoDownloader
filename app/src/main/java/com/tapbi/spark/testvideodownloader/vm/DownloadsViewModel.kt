@@ -3,6 +3,7 @@ package com.tapbi.spark.testvideodownloader.vm
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.tapbi.spark.testvideodownloader.database.AppDatabase
 import com.tapbi.spark.testvideodownloader.database.Download
@@ -13,6 +14,7 @@ import kotlinx.coroutines.launch
 class DownloadsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: DownloadsRepository
+    var isMultiSelectLiveData = MutableLiveData<Boolean>()
     val allDownloads: LiveData<List<Download>>
 
     init {
